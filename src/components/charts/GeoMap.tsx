@@ -23,13 +23,13 @@ export const GeoMap = memo(function GeoMap({ points, width = 800, height = 400 }
 
   useEffect(() => {
     // Dynamic import to keep topojson-client + world-atlas out of the main bundle
-    Promise.all([
-      import('topojson-client'),
-      import('world-atlas/countries-110m.json'),
-    ])
+    Promise.all([import('topojson-client'), import('world-atlas/countries-110m.json')])
       .then(([topojsonModule, topoData]) => {
         const topo = topoData.default as unknown as Topology<Objects<GeoJSON.GeoJsonProperties>>;
-        const geo = topojsonModule.feature(topo, topo.objects.countries) as unknown as GeoJSON.FeatureCollection;
+        const geo = topojsonModule.feature(
+          topo,
+          topo.objects.countries,
+        ) as unknown as GeoJSON.FeatureCollection;
         setWorldData(geo);
       })
       .catch(() => {});
@@ -41,13 +41,13 @@ export const GeoMap = memo(function GeoMap({ points, width = 800, height = 400 }
 
       if (!worldData) return;
 
-      const projection = geoNaturalEarth1()
-        .fitSize([width, height], worldData);
+      const projection = geoNaturalEarth1().fitSize([width, height], worldData);
 
       const path = geoPath(projection);
 
       // Countries
-      svg.append('g')
+      svg
+        .append('g')
         .selectAll('path')
         .data(worldData.features)
         .join('path')
@@ -57,7 +57,8 @@ export const GeoMap = memo(function GeoMap({ points, width = 800, height = 400 }
         .attr('stroke-width', 0.5);
 
       // Points
-      svg.append('g')
+      svg
+        .append('g')
         .selectAll('circle')
         .data(points.filter((p) => p.lat && p.lon))
         .join('circle')
@@ -71,14 +72,15 @@ export const GeoMap = memo(function GeoMap({ points, width = 800, height = 400 }
         .attr('stroke-opacity', 0.3);
 
       // Pulse animation on points
-      svg.selectAll('circle')
+      svg
+        .selectAll('circle')
         .append('animate')
         .attr('attributeName', 'r')
         .attr('values', '3;6;3')
         .attr('dur', '2s')
         .attr('repeatCount', 'indefinite');
     },
-    [worldData, points, width, height]
+    [worldData, points, width, height],
   );
 
   if (!worldData) {

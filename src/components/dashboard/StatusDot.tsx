@@ -19,7 +19,7 @@ export function StatusDot({ color = 'green', pulse = true, className }: StatusDo
         <span
           className={cn(
             'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-            dotColors[color]
+            dotColors[color],
           )}
         />
       )}

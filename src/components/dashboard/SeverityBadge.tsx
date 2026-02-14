@@ -12,9 +12,5 @@ interface SeverityBadgeProps {
 }
 
 export function SeverityBadge({ level }: SeverityBadgeProps) {
-  return (
-    <Badge variant={riskVariants[level.toLowerCase()] || 'default'}>
-      {level}
-    </Badge>
-  );
+  return <Badge variant={riskVariants[level.toLowerCase()] || 'default'}>{level}</Badge>;
 }

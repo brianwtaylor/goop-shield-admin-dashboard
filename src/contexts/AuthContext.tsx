@@ -14,7 +14,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [apiKey, setApiKeyState] = useState(() => localStorage.getItem('shield_api_key') || '');
   const [shieldUrl, setShieldUrlState] = useState(
-    () => localStorage.getItem('shield_url') || 'http://192.168.4.66:8787'
+    () => localStorage.getItem('shield_url') || 'http://192.168.4.66:8787',
   );
 
   const setApiKey = useCallback((key: string) => {

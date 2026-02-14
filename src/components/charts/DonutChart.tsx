@@ -17,7 +17,9 @@ export const DonutChart = memo(function DonutChart({ data, size = 200 }: DonutCh
       svg.attr('width', size).attr('height', size);
       const g = svg.append('g').attr('transform', `translate(${radius},${radius})`);
 
-      const pie = d3pie<{ label: string; value: number }>().value((d) => d.value).sort(null);
+      const pie = d3pie<{ label: string; value: number }>()
+        .value((d) => d.value)
+        .sort(null);
       const arc = d3arc<PieArcDatum<{ label: string; value: number }>>()
         .innerRadius(radius * 0.55)
         .outerRadius(radius * 0.85);
@@ -48,7 +50,7 @@ export const DonutChart = memo(function DonutChart({ data, size = 200 }: DonutCh
         .style('font-size', '11px')
         .text('total');
     },
-    [data, size]
+    [data, size],
   );
 
   return <svg ref={ref} />;

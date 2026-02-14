@@ -12,7 +12,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
 
   if (data === null || data === undefined) {
     return (
-      <div className="flex items-center gap-1 font-mono text-sm" style={{ paddingLeft: level * 16 }}>
+      <div
+        className="flex items-center gap-1 font-mono text-sm"
+        style={{ paddingLeft: level * 16 }}
+      >
         {name && <span className="text-shield-purple">{name}: </span>}
         <span className="text-slate-500">null</span>
       </div>
@@ -21,7 +24,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
 
   if (typeof data === 'boolean') {
     return (
-      <div className="flex items-center gap-1 font-mono text-sm" style={{ paddingLeft: level * 16 }}>
+      <div
+        className="flex items-center gap-1 font-mono text-sm"
+        style={{ paddingLeft: level * 16 }}
+      >
         {name && <span className="text-shield-purple">{name}: </span>}
         <span className="text-shield-amber">{String(data)}</span>
       </div>
@@ -30,7 +36,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
 
   if (typeof data === 'number') {
     return (
-      <div className="flex items-center gap-1 font-mono text-sm" style={{ paddingLeft: level * 16 }}>
+      <div
+        className="flex items-center gap-1 font-mono text-sm"
+        style={{ paddingLeft: level * 16 }}
+      >
         {name && <span className="text-shield-purple">{name}: </span>}
         <span className="text-shield-cyan">{data}</span>
       </div>
@@ -39,7 +48,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
 
   if (typeof data === 'string') {
     return (
-      <div className="flex items-center gap-1 font-mono text-sm" style={{ paddingLeft: level * 16 }}>
+      <div
+        className="flex items-center gap-1 font-mono text-sm"
+        style={{ paddingLeft: level * 16 }}
+      >
         {name && <span className="text-shield-purple">{name}: </span>}
         <span className="text-shield-green">"{data}"</span>
       </div>
@@ -58,9 +70,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
           {name && <span className="text-shield-purple">{name}: </span>}
           <span className="text-slate-500">[{data.length}]</span>
         </button>
-        {expanded && data.map((item, i) => (
-          <JsonTree key={i} data={item} name={String(i)} level={level + 1} />
-        ))}
+        {expanded &&
+          data.map((item, i) => (
+            <JsonTree key={i} data={item} name={String(i)} level={level + 1} />
+          ))}
       </div>
     );
   }
@@ -78,9 +91,10 @@ export function JsonTree({ data, name, level = 0 }: JsonTreeProps) {
           {name && <span className="text-shield-purple">{name}: </span>}
           <span className="text-slate-500">{`{${entries.length}}`}</span>
         </button>
-        {expanded && entries.map(([key, value]) => (
-          <JsonTree key={key} data={value} name={key} level={level + 1} />
-        ))}
+        {expanded &&
+          entries.map(([key, value]) => (
+            <JsonTree key={key} data={value} name={key} level={level + 1} />
+          ))}
       </div>
     );
   }

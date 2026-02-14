@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -21,19 +22,25 @@ export function AgentProtection() {
   const { data: drift } = useDrift();
   const { data: supplyChain } = useSupplyChain();
 
+  const driftAlerts = useMemo(() => drift?.alerts || [], [drift?.alerts]);
+  const driftData = useMemo(() => {
+    // eslint-disable-next-line react-hooks/purity -- Date.now() needed for synthetic time axis
+    const now = Date.now();
+    return driftAlerts.map((a, i) => ({
+      date: new Date(now - (driftAlerts.length - i) * 60_000),
+      value: a.current_rate,
+    }));
+  }, [driftAlerts]);
+
   if (statsLoading) {
     return (
       <div className="grid grid-cols-2 gap-4">
-        {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-48" />)}
+        {[...Array(6)].map((_, i) => (
+          <Skeleton key={i} className="h-48" />
+        ))}
       </div>
     );
   }
-
-  const driftAlerts = drift?.alerts || [];
-  const driftData = driftAlerts.map((a, i) => ({
-    date: new Date(Date.now() - (driftAlerts.length - i) * 60_000),
-    value: a.current_rate,
-  }));
 
   return (
     <div className="space-y-6">
@@ -78,7 +85,8 @@ export function AgentProtection() {
                   </div>
                   <div className="bg-shield-bg rounded-lg p-3 text-center">
                     <p className="text-2xl font-bold text-shield-green">
-                      {stat && stat.invocations > 0 ? Math.round((1 - stat.block_rate) * 100) : 100}%
+                      {stat && stat.invocations > 0 ? Math.round((1 - stat.block_rate) * 100) : 100}
+                      %
                     </p>
                     <p className="text-[10px] text-slate-500 uppercase">Pass Rate</p>
                   </div>
@@ -99,9 +107,13 @@ export function AgentProtection() {
             return (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${(stat?.blocks ?? 0) > 0 ? 'bg-shield-red' : 'bg-shield-green'}`} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${(stat?.blocks ?? 0) > 0 ? 'bg-shield-red' : 'bg-shield-green'}`}
+                  />
                   <span className="text-sm text-slate-300">
-                    {(stat?.blocks ?? 0) > 0 ? `${stat!.blocks} poisoning attempts blocked` : 'All memory writes verified'}
+                    {(stat?.blocks ?? 0) > 0
+                      ? `${stat!.blocks} poisoning attempts blocked`
+                      : 'All memory writes verified'}
                   </span>
                 </div>
                 <div className="bg-shield-bg rounded-lg p-3 text-xs font-mono text-slate-400">
@@ -126,7 +138,9 @@ export function AgentProtection() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-shield-bg rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-shield-purple">{stat?.invocations ?? 0}</p>
+                    <p className="text-2xl font-bold text-shield-purple">
+                      {stat?.invocations ?? 0}
+                    </p>
                     <p className="text-[10px] text-slate-500 uppercase">Scanned</p>
                   </div>
                   <div className="bg-shield-bg rounded-lg p-3 text-center">
@@ -172,7 +186,9 @@ export function AgentProtection() {
           </p>
           {driftAlerts.length > 0 ? (
             <div className="space-y-2">
-              {driftData.length > 1 && <AreaChart data={driftData} width={380} height={120} color={shieldColors.amber} />}
+              {driftData.length > 1 && (
+                <AreaChart data={driftData} width={380} height={120} color={shieldColors.amber} />
+              )}
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {driftAlerts.map((a, i) => (
                   <div key={i} className="flex items-center justify-between text-xs px-2 py-1">
@@ -186,7 +202,9 @@ export function AgentProtection() {
           ) : (
             <div className="flex items-center gap-2 text-sm">
               <div className="w-3 h-3 rounded-full bg-shield-green" />
-              <span className="text-slate-300">No drift detected ({drift?.defenses_analyzed ?? 0} defenses analyzed)</span>
+              <span className="text-slate-300">
+                No drift detected ({drift?.defenses_analyzed ?? 0} defenses analyzed)
+              </span>
             </div>
           )}
         </Card>
@@ -200,7 +218,9 @@ export function AgentProtection() {
           {supplyChain ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${supplyChain.valid ? 'bg-shield-green' : 'bg-shield-red'}`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${supplyChain.valid ? 'bg-shield-green' : 'bg-shield-red'}`}
+                />
                 <span className="text-sm text-slate-300">
                   {supplyChain.valid ? 'All validations passed' : 'Validation issues found'}
                 </span>
@@ -209,7 +229,9 @@ export function AgentProtection() {
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {supplyChain.artifacts.map((a, i) => (
                     <div key={i} className="flex items-center justify-between text-xs px-2 py-1">
-                      <span className="text-slate-400 font-mono truncate max-w-[200px]">{a.path}</span>
+                      <span className="text-slate-400 font-mono truncate max-w-[200px]">
+                        {a.path}
+                      </span>
                       <Badge variant={a.valid ? 'green' : 'red'}>
                         {a.valid ? 'valid' : 'invalid'}
                       </Badge>
@@ -223,8 +245,12 @@ export function AgentProtection() {
                   <div className="space-y-1 max-h-24 overflow-y-auto">
                     {supplyChain.dependencies.map((d, i) => (
                       <div key={i} className="flex items-center justify-between text-xs px-2 py-1">
-                        <span className="text-slate-400">{d.package} {d.actual_version && `@${d.actual_version}`}</span>
-                        <Badge variant={d.valid ? 'green' : 'red'}>{d.valid ? 'ok' : 'mismatch'}</Badge>
+                        <span className="text-slate-400">
+                          {d.package} {d.actual_version && `@${d.actual_version}`}
+                        </span>
+                        <Badge variant={d.valid ? 'green' : 'red'}>
+                          {d.valid ? 'ok' : 'mismatch'}
+                        </Badge>
                       </div>
                     ))}
                   </div>

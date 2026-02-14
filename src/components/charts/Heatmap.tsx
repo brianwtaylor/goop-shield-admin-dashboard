@@ -14,7 +14,13 @@ interface HeatmapProps {
   height?: number;
 }
 
-export const Heatmap = memo(function Heatmap({ data, rows, cols, width = 600, height = 400 }: HeatmapProps) {
+export const Heatmap = memo(function Heatmap({
+  data,
+  rows,
+  cols,
+  width = 600,
+  height = 400,
+}: HeatmapProps) {
   const margin = { top: 30, right: 20, bottom: 80, left: 120 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
@@ -29,8 +35,9 @@ export const Heatmap = memo(function Heatmap({ data, rows, cols, width = 600, he
       const y = scaleBand().domain(rows).range([0, innerH]).padding(0.05);
 
       const maxVal = max(data, (d) => d.value) || 1;
-      const color = scaleSequential(interpolateRgbBasis([shieldColors.bg, shieldColors.cyan, shieldColors.red]))
-        .domain([0, maxVal]);
+      const color = scaleSequential(
+        interpolateRgbBasis([shieldColors.bg, shieldColors.cyan, shieldColors.red]),
+      ).domain([0, maxVal]);
 
       g.selectAll('rect')
         .data(data)
@@ -59,7 +66,7 @@ export const Heatmap = memo(function Heatmap({ data, rows, cols, width = 600, he
 
       g.selectAll('.domain, .tick line').attr('stroke', shieldColors.border);
     },
-    [data, rows, cols, width, height]
+    [data, rows, cols, width, height],
   );
 
   return <svg ref={ref} />;

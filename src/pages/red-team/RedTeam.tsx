@@ -83,7 +83,9 @@ export function RedTeam() {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-3 gap-4">
-          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24" />)}
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
         </div>
         <Skeleton className="h-80" />
       </div>
@@ -167,7 +169,10 @@ export function RedTeam() {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-shield-border/50 hover:bg-shield-border/20">
+                <tr
+                  key={row.id}
+                  className="border-b border-shield-border/50 hover:bg-shield-border/20"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="py-2 px-3 text-slate-300">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

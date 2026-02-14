@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card } from '../ui/Card';
 import { AnimatedNumber } from './AnimatedNumber';
 import type { LucideIcon } from 'lucide-react';
@@ -10,7 +11,13 @@ interface StatCardProps {
   color?: string;
 }
 
-export function StatCard({ icon: Icon, label, value, format, color = '#06b6d4' }: StatCardProps) {
+export const StatCard = memo(function StatCard({
+  icon: Icon,
+  label,
+  value,
+  format,
+  color = '#06b6d4',
+}: StatCardProps) {
   return (
     <Card hover className="flex items-center gap-4">
       <div
@@ -27,4 +34,4 @@ export function StatCard({ icon: Icon, label, value, format, color = '#06b6d4' }
       </div>
     </Card>
   );
-}
+});

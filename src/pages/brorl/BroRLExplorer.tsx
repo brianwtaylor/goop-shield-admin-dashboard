@@ -97,18 +97,33 @@ export function BroRLExplorer() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-shield-border">
-                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Defense</th>
-                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Weight</th>
-                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider w-1/2">Distribution</th>
-                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Alpha</th>
-                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Beta</th>
+                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">
+                  Defense
+                </th>
+                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">
+                  Weight
+                </th>
+                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider w-1/2">
+                  Distribution
+                </th>
+                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">
+                  Alpha
+                </th>
+                <th className="text-left py-2 px-3 text-xs text-slate-500 uppercase tracking-wider">
+                  Beta
+                </th>
               </tr>
             </thead>
             <tbody>
               {weights.map((w) => {
-                const p = brorl?.parameters?.[w.name] as { alpha: number; beta: number } | undefined;
+                const p = brorl?.parameters?.[w.name] as
+                  | { alpha: number; beta: number }
+                  | undefined;
                 return (
-                  <tr key={w.name} className="border-b border-shield-border/50 hover:bg-shield-border/20">
+                  <tr
+                    key={w.name}
+                    className="border-b border-shield-border/50 hover:bg-shield-border/20"
+                  >
                     <td className="py-2 px-3 text-slate-300 font-mono text-xs">{w.name}</td>
                     <td className="py-2 px-3 text-shield-cyan font-mono">{w.weight.toFixed(4)}</td>
                     <td className="py-2 px-3">
@@ -119,8 +134,12 @@ export function BroRLExplorer() {
                         />
                       </div>
                     </td>
-                    <td className="py-2 px-3 text-slate-400 font-mono text-xs">{p?.alpha.toFixed(2) ?? '-'}</td>
-                    <td className="py-2 px-3 text-slate-400 font-mono text-xs">{p?.beta.toFixed(2) ?? '-'}</td>
+                    <td className="py-2 px-3 text-slate-400 font-mono text-xs">
+                      {p?.alpha.toFixed(2) ?? '-'}
+                    </td>
+                    <td className="py-2 px-3 text-slate-400 font-mono text-xs">
+                      {p?.beta.toFixed(2) ?? '-'}
+                    </td>
                   </tr>
                 );
               })}

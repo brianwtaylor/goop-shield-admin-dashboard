@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Activity, ShieldOff, ShieldCheck, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card } from '../../components/ui/Card';
@@ -15,53 +16,57 @@ export function CommandCenter() {
   const { data: stats } = useDefenseStats();
   const { events } = useWebSocket();
 
+  // Build heatmap data from stats
+  const { heatmapRows, heatmapCols, heatmapData } = useMemo(() => {
+    const rows = stats?.map((s) => s.name).slice(0, 10) || [];
+    const cols = ['blocks', 'block_rate', 'invocations'];
+    const data =
+      stats?.slice(0, 10).flatMap((s) => [
+        { row: s.name, col: 'blocks', value: s.blocks },
+        { row: s.name, col: 'block_rate', value: Math.round(s.block_rate * 100) },
+        { row: s.name, col: 'invocations', value: s.invocations },
+      ]) || [];
+    return { heatmapRows: rows, heatmapCols: cols, heatmapData: data };
+  }, [stats]);
+
+  // Top attack classifications from events
+  const { topAttacks, maxAttackCount } = useMemo(() => {
+    const counts: Record<string, number> = {};
+    events.forEach((e) => {
+      if (e.classification) {
+        counts[e.classification] = (counts[e.classification] || 0) + 1;
+      }
+    });
+    const sorted = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    return { topAttacks: sorted, maxAttackCount: sorted[0]?.[1] || 1 };
+  }, [events]);
+
+  // Top defenses
+  const { topDefenses, maxDefenseInvocations } = useMemo(() => {
+    const sorted = [...(stats || [])].sort((a, b) => b.invocations - a.invocations).slice(0, 5);
+    return { topDefenses: sorted, maxDefenseInvocations: sorted[0]?.invocations || 1 };
+  }, [stats]);
+
   if (healthLoading) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />)}
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
         </div>
         <Skeleton className="h-64" />
       </div>
     );
   }
 
-  // Build heatmap data from stats
-  const heatmapRows = stats?.map((s) => s.name).slice(0, 10) || [];
-  const heatmapCols = ['blocks', 'block_rate', 'invocations'];
-  const heatmapData = stats?.slice(0, 10).flatMap((s) => [
-    { row: s.name, col: 'blocks', value: s.blocks },
-    { row: s.name, col: 'block_rate', value: Math.round(s.block_rate * 100) },
-    { row: s.name, col: 'invocations', value: s.invocations },
-  ]) || [];
-
-  // Top attack classifications from events
-  const classificationCounts: Record<string, number> = {};
-  events.forEach((e) => {
-    if (e.classification) {
-      classificationCounts[e.classification] = (classificationCounts[e.classification] || 0) + 1;
-    }
-  });
-  const topAttacks = Object.entries(classificationCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  const maxAttackCount = topAttacks[0]?.[1] || 1;
-
-  // Top defenses
-  const topDefenses = [...(stats || [])]
-    .sort((a, b) => b.invocations - a.invocations)
-    .slice(0, 5);
-  const maxDefenseInvocations = topDefenses[0]?.invocations || 1;
-
   return (
     <div className="space-y-6">
       {/* Health + Stat Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <StatCard
-          icon={Activity}
-          label="Total Requests"
-          value={health?.total_requests || 0}
-        />
+        <StatCard icon={Activity} label="Total Requests" value={health?.total_requests || 0} />
         <StatCard
           icon={ShieldOff}
           label="Blocked"
@@ -87,7 +92,9 @@ export function CommandCenter() {
       <div className="grid grid-cols-3 gap-4">
         <Card className="col-span-1">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Uptime</p>
-          <p className="text-lg font-mono text-white">{formatDuration(health?.uptime_seconds || 0)}</p>
+          <p className="text-lg font-mono text-white">
+            {formatDuration(health?.uptime_seconds || 0)}
+          </p>
         </Card>
         <Card className="col-span-1">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Version</p>
@@ -126,9 +133,7 @@ export function CommandCenter() {
                   >
                     {event.action}
                   </span>
-                  <span className="text-slate-400 truncate">
-                    {event.classification || '-'}
-                  </span>
+                  <span className="text-slate-400 truncate">{event.classification || '-'}</span>
                 </motion.div>
               ))
             )}
@@ -192,7 +197,13 @@ export function CommandCenter() {
         <Card>
           <h3 className="text-sm font-medium text-slate-300 mb-3">Defense Activity Heatmap</h3>
           <div className="overflow-x-auto">
-            <Heatmap data={heatmapData} rows={heatmapRows} cols={heatmapCols} width={800} height={300} />
+            <Heatmap
+              data={heatmapData}
+              rows={heatmapRows}
+              cols={heatmapCols}
+              width={800}
+              height={300}
+            />
           </div>
         </Card>
       )}
