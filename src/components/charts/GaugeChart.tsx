@@ -10,7 +10,12 @@ interface GaugeChartProps {
   label?: string;
 }
 
-export const GaugeChart = memo(function GaugeChart({ value, size = 120, color = shieldColors.cyan, label }: GaugeChartProps) {
+export const GaugeChart = memo(function GaugeChart({
+  value,
+  size = 120,
+  color = shieldColors.cyan,
+  label,
+}: GaugeChartProps) {
   const ref = useD3(
     (svg) => {
       const radius = size / 2;
@@ -33,8 +38,12 @@ export const GaugeChart = memo(function GaugeChart({ value, size = 120, color = 
         .startAngle(startAngle)
         .endAngle(startAngle + (endAngle - startAngle) * clamped);
 
-      g.append('path').attr('d', bgArc({}) as string).attr('fill', shieldColors.border);
-      g.append('path').attr('d', valArc({}) as string).attr('fill', color);
+      g.append('path')
+        .attr('d', bgArc({}) as string)
+        .attr('fill', shieldColors.border);
+      g.append('path')
+        .attr('d', valArc({}) as string)
+        .attr('fill', color);
 
       g.append('text')
         .attr('text-anchor', 'middle')
@@ -53,7 +62,7 @@ export const GaugeChart = memo(function GaugeChart({ value, size = 120, color = 
           .text(label);
       }
     },
-    [value, size, color, label]
+    [value, size, color, label],
   );
 
   return <svg ref={ref} />;

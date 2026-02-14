@@ -22,8 +22,11 @@ function betaPDF(x: number, a: number, b: number): number {
 
 function lgamma(x: number): number {
   // Stirling approximation for log-gamma
-  const cof = [76.18009172947146, -86.50532032941677, 24.01409824083091,
-    -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+  /* eslint-disable no-loss-of-precision -- Lanczos coefficients require full precision */
+  const cof = [
+    76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155,
+    1.208650973866179e-3, -5.395239384953e-6,
+  ];
   let y = x;
   let tmp = x + 5.5;
   tmp -= (x + 0.5) * Math.log(tmp);
@@ -31,10 +34,15 @@ function lgamma(x: number): number {
   for (let j = 0; j < 6; j++) {
     ser += cof[j] / ++y;
   }
-  return -tmp + Math.log(2.5066282746310005 * ser / x);
+  return -tmp + Math.log((2.5066282746310005 * ser) / x);
+  /* eslint-enable no-loss-of-precision */
 }
 
-export const BetaCurve = memo(function BetaCurve({ curves, width = 500, height = 250 }: BetaCurveProps) {
+export const BetaCurve = memo(function BetaCurve({
+  curves,
+  width = 500,
+  height = 250,
+}: BetaCurveProps) {
   const margin = { top: 10, right: 120, bottom: 30, left: 40 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
@@ -80,24 +88,40 @@ export const BetaCurve = memo(function BetaCurve({ curves, width = 500, height =
       g.append('g')
         .attr('transform', `translate(0,${innerH})`)
         .call(axisBottom(xScale).ticks(5))
-        .selectAll('text').style('fill', shieldColors.textMuted).style('font-size', '10px');
+        .selectAll('text')
+        .style('fill', shieldColors.textMuted)
+        .style('font-size', '10px');
       g.append('g')
         .call(axisLeft(yScale).ticks(4))
-        .selectAll('text').style('fill', shieldColors.textMuted).style('font-size', '10px');
+        .selectAll('text')
+        .style('fill', shieldColors.textMuted)
+        .style('font-size', '10px');
       g.selectAll('.domain, .tick line').attr('stroke', shieldColors.border);
 
       // Legend
-      const legend = svg.append('g').attr('transform', `translate(${width - margin.right + 10},${margin.top})`);
+      const legend = svg
+        .append('g')
+        .attr('transform', `translate(${width - margin.right + 10},${margin.top})`);
       allPoints.forEach((curve, i) => {
         const row = legend.append('g').attr('transform', `translate(0,${i * 18})`);
-        row.append('line').attr('x1', 0).attr('x2', 14).attr('y1', 6).attr('y2', 6)
-          .attr('stroke', color(String(i))).attr('stroke-width', 2);
-        row.append('text').attr('x', 18).attr('y', 10)
-          .style('fill', shieldColors.textMuted).style('font-size', '10px')
+        row
+          .append('line')
+          .attr('x1', 0)
+          .attr('x2', 14)
+          .attr('y1', 6)
+          .attr('y2', 6)
+          .attr('stroke', color(String(i)))
+          .attr('stroke-width', 2);
+        row
+          .append('text')
+          .attr('x', 18)
+          .attr('y', 10)
+          .style('fill', shieldColors.textMuted)
+          .style('font-size', '10px')
           .text(curve.name.length > 12 ? curve.name.slice(0, 12) + '..' : curve.name);
       });
     },
-    [curves, width, height]
+    [curves, width, height],
   );
 
   return <svg ref={ref} />;

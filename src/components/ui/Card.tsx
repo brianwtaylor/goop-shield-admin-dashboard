@@ -11,7 +11,7 @@ interface CardProps {
 export function Card({ children, className, hover = false }: CardProps) {
   const classes = cn(
     'bg-shield-surface/80 backdrop-blur-sm border border-shield-border rounded-xl p-4',
-    className
+    className,
   );
 
   if (hover) {

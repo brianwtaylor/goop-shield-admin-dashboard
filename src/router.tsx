@@ -3,14 +3,30 @@ import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/re
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Skeleton } from './components/ui/Skeleton';
 
-const CommandCenter = lazy(() => import('./pages/command-center/CommandCenter').then(m => ({ default: m.CommandCenter })));
-const DefenseMatrix = lazy(() => import('./pages/defense-matrix/DefenseMatrix').then(m => ({ default: m.DefenseMatrix })));
-const ThreatIntel = lazy(() => import('./pages/threat-intel/ThreatIntel').then(m => ({ default: m.ThreatIntel })));
-const AuditLog = lazy(() => import('./pages/audit-log/AuditLog').then(m => ({ default: m.AuditLog })));
-const RedTeam = lazy(() => import('./pages/red-team/RedTeam').then(m => ({ default: m.RedTeam })));
-const AgentProtection = lazy(() => import('./pages/agent-protection/AgentProtection').then(m => ({ default: m.AgentProtection })));
-const BroRLExplorer = lazy(() => import('./pages/brorl/BroRLExplorer').then(m => ({ default: m.BroRLExplorer })));
-const SettingsPage = lazy(() => import('./pages/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const CommandCenter = lazy(() =>
+  import('./pages/command-center/CommandCenter').then((m) => ({ default: m.CommandCenter })),
+);
+const DefenseMatrix = lazy(() =>
+  import('./pages/defense-matrix/DefenseMatrix').then((m) => ({ default: m.DefenseMatrix })),
+);
+const ThreatIntel = lazy(() =>
+  import('./pages/threat-intel/ThreatIntel').then((m) => ({ default: m.ThreatIntel })),
+);
+const AuditLog = lazy(() =>
+  import('./pages/audit-log/AuditLog').then((m) => ({ default: m.AuditLog })),
+);
+const RedTeam = lazy(() =>
+  import('./pages/red-team/RedTeam').then((m) => ({ default: m.RedTeam })),
+);
+const AgentProtection = lazy(() =>
+  import('./pages/agent-protection/AgentProtection').then((m) => ({ default: m.AgentProtection })),
+);
+const BroRLExplorer = lazy(() =>
+  import('./pages/brorl/BroRLExplorer').then((m) => ({ default: m.BroRLExplorer })),
+);
+const SettingsPage = lazy(() =>
+  import('./pages/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
+);
 
 function PageFallback() {
   return (

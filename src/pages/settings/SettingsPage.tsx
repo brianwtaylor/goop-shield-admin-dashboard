@@ -37,7 +37,9 @@ export function SettingsPage() {
         <h3 className="text-sm font-medium text-slate-300 mb-4">API Configuration</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Shield URL</label>
+            <label className="block text-xs text-slate-500 uppercase tracking-wider mb-1">
+              Shield URL
+            </label>
             <input
               type="text"
               value={urlInput}
@@ -47,7 +49,9 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-slate-500 uppercase tracking-wider mb-1">API Key</label>
+            <label className="block text-xs text-slate-500 uppercase tracking-wider mb-1">
+              API Key
+            </label>
             <input
               type="password"
               value={keyInput}
@@ -90,7 +94,9 @@ export function SettingsPage() {
             <JsonTree data={config} />
           </div>
         ) : (
-          <p className="text-slate-500 text-sm">Could not load configuration. Verify connection settings.</p>
+          <p className="text-slate-500 text-sm">
+            Could not load configuration. Verify connection settings.
+          </p>
         )}
       </Card>
     </div>

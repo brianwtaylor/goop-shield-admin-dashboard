@@ -125,7 +125,9 @@ export function AuditLog() {
           )}
           <div className="flex flex-wrap gap-1 mt-2 justify-center">
             {classificationData.slice(0, 5).map((d) => (
-              <Badge key={d.label} variant="cyan">{d.label}: {d.value}</Badge>
+              <Badge key={d.label} variant="cyan">
+                {d.label}: {d.value}
+              </Badge>
             ))}
           </div>
         </Card>
@@ -158,7 +160,9 @@ export function AuditLog() {
         >
           <option value="">All Classifications</option>
           {classificationData.map((d) => (
-            <option key={d.label} value={d.label}>{d.label}</option>
+            <option key={d.label} value={d.label}>
+              {d.label}
+            </option>
           ))}
         </select>
       </div>
@@ -224,11 +228,16 @@ export function AuditLog() {
               <div className="space-y-4">
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Timestamp</p>
-                  <p className="text-sm text-slate-300">{new Date(selectedEvent.timestamp).toLocaleString()}</p>
+                  <p className="text-sm text-slate-300">
+                    {new Date(selectedEvent.timestamp).toLocaleString()}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Action</p>
-                  <p className="text-sm" style={{ color: actionColors[selectedEvent.action] || '#94a3b8' }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: actionColors[selectedEvent.action] || '#94a3b8' }}
+                  >
                     {selectedEvent.action}
                   </p>
                 </div>
@@ -238,11 +247,15 @@ export function AuditLog() {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Source IP</p>
-                  <p className="text-sm text-slate-300 font-mono">{selectedEvent.source_ip || '-'}</p>
+                  <p className="text-sm text-slate-300 font-mono">
+                    {selectedEvent.source_ip || '-'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Confidence</p>
-                  <p className="text-sm text-slate-300">{selectedEvent.confidence?.toFixed(3) || '-'}</p>
+                  <p className="text-sm text-slate-300">
+                    {selectedEvent.confidence?.toFixed(3) || '-'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Prompt Preview</p>
@@ -255,7 +268,9 @@ export function AuditLog() {
                     <p className="text-xs text-slate-500 uppercase mb-2">Defenses Applied</p>
                     <div className="flex flex-wrap gap-1">
                       {selectedEvent.defenses_applied.map((d) => (
-                        <Badge key={d} variant="cyan">{d}</Badge>
+                        <Badge key={d} variant="cyan">
+                          {d}
+                        </Badge>
                       ))}
                     </div>
                   </div>

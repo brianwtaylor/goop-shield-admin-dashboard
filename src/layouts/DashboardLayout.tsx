@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { StatusDot } from '../components/dashboard/StatusDot';
 import { useHealth } from '../hooks/useHealth';
-import { useWebSocket } from '../contexts/WebSocketContext';
+import { useWebSocketConnection } from '../contexts/WebSocketContext';
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -39,10 +39,9 @@ const navItems = [
 ] as const;
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
-  const routerState = useRouterState();
-  const currentPath = routerState.location.pathname;
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const { data: health } = useHealth();
-  const { isConnected } = useWebSocket();
+  const { isConnected } = useWebSocketConnection();
 
   return (
     <div className="flex h-screen overflow-hidden bg-shield-bg">
@@ -101,22 +100,20 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
               <span>{isConnected ? 'Live' : 'Offline'}</span>
             </div>
             {health && (
-              <div className="text-xs text-slate-500">
-                {health.defenses_active} defenses active
-              </div>
+              <div className="text-xs text-slate-500">{health.defenses_active} defenses active</div>
             )}
           </div>
         </header>
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6 grid-pattern">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.div
               key={currentPath}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.1 }}
             >
               {children}
             </motion.div>

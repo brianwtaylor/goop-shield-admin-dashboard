@@ -77,12 +77,14 @@ export const AuditEventRawSchema = z.object({
   classification: z.string().optional(),
   session_id: z.string().optional(),
   actor_id: z.string().optional(),
-  geo: z.object({
-    country: z.string().optional(),
-    city: z.string().optional(),
-    lat: z.number().optional(),
-    lon: z.number().optional(),
-  }).optional(),
+  geo: z
+    .object({
+      country: z.string().optional(),
+      city: z.string().optional(),
+      lat: z.number().optional(),
+      lon: z.number().optional(),
+    })
+    .optional(),
 });
 
 /** Dashboard-friendly audit event */
@@ -113,20 +115,27 @@ export interface AuditEvent {
 export const DefenseStatsRawSchema = z.object({
   total_requests: z.number(),
   total_blocked: z.number(),
-  defense_stats: z.record(z.string(), z.object({
-    invocations: z.number(),
-    blocks: z.number(),
-  })),
-  ranking: z.object({
-    backend: z.string(),
-    priorities: z.record(z.string(), z.number()),
-    default_priority: z.number(),
-  }).optional(),
-  ranking_stats: z.object({
-    backend: z.string(),
-    num_defenses: z.number(),
-    default_priority: z.number(),
-  }).optional(),
+  defense_stats: z.record(
+    z.string(),
+    z.object({
+      invocations: z.number(),
+      blocks: z.number(),
+    }),
+  ),
+  ranking: z
+    .object({
+      backend: z.string(),
+      priorities: z.record(z.string(), z.number()),
+      default_priority: z.number(),
+    })
+    .optional(),
+  ranking_stats: z
+    .object({
+      backend: z.string(),
+      num_defenses: z.number(),
+      default_priority: z.number(),
+    })
+    .optional(),
 });
 
 /** Dashboard-friendly defense stat */
@@ -169,10 +178,15 @@ export type RedTeamReport = z.infer<typeof RedTeamReportSchema>;
 // Matches GET /api/v1/brorl/weights actual response
 export const BroRLWeightsSchema = z.object({
   weights: z.record(z.string(), z.number()),
-  parameters: z.record(z.string(), z.object({
-    alpha: z.number(),
-    beta: z.number(),
-  })).optional(),
+  parameters: z
+    .record(
+      z.string(),
+      z.object({
+        alpha: z.number(),
+        beta: z.number(),
+      }),
+    )
+    .optional(),
 });
 export type BroRLWeights = z.infer<typeof BroRLWeightsSchema>;
 
@@ -186,12 +200,14 @@ export const ThreatActorSchema = z.object({
   first_seen: z.string().optional(),
   last_seen: z.string().optional(),
   classifications: z.array(z.string()).optional(),
-  geo: z.object({
-    country: z.string().optional(),
-    city: z.string().optional(),
-    lat: z.number().optional(),
-    lon: z.number().optional(),
-  }).optional(),
+  geo: z
+    .object({
+      country: z.string().optional(),
+      city: z.string().optional(),
+      lat: z.number().optional(),
+      lon: z.number().optional(),
+    })
+    .optional(),
 });
 export type ThreatActor = z.infer<typeof ThreatActorSchema>;
 

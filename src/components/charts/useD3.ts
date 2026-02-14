@@ -3,7 +3,7 @@ import { select, type Selection } from 'd3-selection';
 
 export function useD3(
   renderFn: (svg: Selection<SVGSVGElement, unknown, null, undefined>) => void,
-  deps: unknown[]
+  deps: unknown[],
 ) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -12,35 +13,58 @@ export function DefenseMatrix() {
   const { data: stats, isLoading } = useDefenseStats();
   const { data: brorl } = useBroRL();
 
+  const defenses = useMemo(() => stats || [], [stats]);
+
+  const heatmapData = useMemo(
+    () =>
+      defenses.flatMap((d) => [
+        { row: d.name, col: 'blocks', value: d.blocks },
+        { row: d.name, col: 'block_rate', value: Math.round(d.block_rate * 100) },
+        { row: d.name, col: 'invocations', value: d.invocations },
+      ]),
+    [defenses],
+  );
+
+  const { preprocessors, outputScanners, inlineDefenses } = useMemo(() => {
+    const pre = defenses.filter((d) =>
+      ['prompt_normalizer', 'invisible_chars', 'unicode_confusables'].includes(d.name),
+    );
+    const out = defenses.filter((d) =>
+      ['secret_leak', 'canary_leak', 'harmful_content'].includes(d.name),
+    );
+    const inline = defenses.filter((d) => !pre.includes(d) && !out.includes(d));
+    return { preprocessors: pre, outputScanners: out, inlineDefenses: inline };
+  }, [defenses]);
+
+  // Stable sparkline data — only regenerates when stats change
+  const sparklineMap = useMemo(() => {
+    const map = new Map<string, number[]>();
+    for (const d of defenses) {
+      // Seed a deterministic-ish series from invocations so it's stable across renders
+      const data = Array.from({ length: 10 }, (_, i) => {
+        const seed = d.invocations * (i + 1);
+        const pseudo = ((seed * 9301 + 49297) % 233280) / 233280;
+        return Math.max(0, (d.invocations * (0.5 + pseudo * 0.5)) / (10 - i));
+      });
+      map.set(d.name, data);
+    }
+    return map;
+  }, [defenses]);
+
   if (isLoading) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-80" />
         <div className="grid grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40" />)}
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-40" />
+          ))}
         </div>
       </div>
     );
   }
 
-  const defenses = stats || [];
   const classifications = ['blocks', 'block_rate', 'invocations'];
-  const heatmapData = defenses.flatMap((d) => [
-    { row: d.name, col: 'blocks', value: d.blocks },
-    { row: d.name, col: 'block_rate', value: Math.round(d.block_rate * 100) },
-    { row: d.name, col: 'invocations', value: d.invocations },
-  ]);
-
-  // Pipeline visualization data
-  const preprocessors = defenses.filter((d) =>
-    ['prompt_normalizer', 'invisible_chars', 'unicode_confusables'].includes(d.name)
-  );
-  const outputScanners = defenses.filter((d) =>
-    ['secret_leak', 'canary_leak', 'harmful_content'].includes(d.name)
-  );
-  const inlineDefenses = defenses.filter(
-    (d) => !preprocessors.includes(d) && !outputScanners.includes(d)
-  );
 
   return (
     <div className="space-y-6">
@@ -68,10 +92,15 @@ export function DefenseMatrix() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           {/* Preprocessors */}
           <div className="flex-shrink-0">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">Preprocessors</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">
+              Preprocessors
+            </p>
             <div className="flex flex-col gap-1">
               {preprocessors.map((d) => (
-                <div key={d.name} className="bg-shield-purple/10 border border-shield-purple/30 rounded-lg px-3 py-1.5 text-xs text-shield-purple">
+                <div
+                  key={d.name}
+                  className="bg-shield-purple/10 border border-shield-purple/30 rounded-lg px-3 py-1.5 text-xs text-shield-purple"
+                >
                   {d.name}
                 </div>
               ))}
@@ -83,10 +112,15 @@ export function DefenseMatrix() {
 
           {/* BroRL-ranked defenses */}
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">BroRL-Ranked Defenses</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">
+              BroRL-Ranked Defenses
+            </p>
             <div className="flex flex-wrap gap-1">
               {inlineDefenses.map((d) => (
-                <div key={d.name} className="bg-shield-cyan/10 border border-shield-cyan/30 rounded-lg px-3 py-1.5 text-xs text-shield-cyan">
+                <div
+                  key={d.name}
+                  className="bg-shield-cyan/10 border border-shield-cyan/30 rounded-lg px-3 py-1.5 text-xs text-shield-cyan"
+                >
                   {d.name}
                 </div>
               ))}
@@ -98,10 +132,15 @@ export function DefenseMatrix() {
 
           {/* Output Scanners */}
           <div className="flex-shrink-0">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">Output Scanners</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 text-center">
+              Output Scanners
+            </p>
             <div className="flex flex-col gap-1">
               {outputScanners.map((d) => (
-                <div key={d.name} className="bg-shield-amber/10 border border-shield-amber/30 rounded-lg px-3 py-1.5 text-xs text-shield-amber">
+                <div
+                  key={d.name}
+                  className="bg-shield-amber/10 border border-shield-amber/30 rounded-lg px-3 py-1.5 text-xs text-shield-amber"
+                >
                   {d.name}
                 </div>
               ))}
@@ -116,10 +155,7 @@ export function DefenseMatrix() {
         <div className="grid grid-cols-3 gap-4">
           {defenses.map((d) => {
             const weight = (brorl?.weights as Record<string, number> | undefined)?.[d.name];
-            // Generate synthetic sparkline data from the stats
-            const sparkData = Array.from({ length: 10 }, (_, i) =>
-              Math.max(0, d.invocations * (0.5 + Math.random() * 0.5) / (10 - i))
-            );
+            const sparkData = sparklineMap.get(d.name) || [];
             return (
               <Card key={d.name} hover>
                 <div className="flex items-start justify-between mb-2">
@@ -133,7 +169,10 @@ export function DefenseMatrix() {
                   </div>
                   <div>
                     <p className="text-slate-500">Block Rate</p>
-                    <p className="font-mono" style={{ color: d.block_rate > 0.5 ? shieldColors.red : shieldColors.green }}>
+                    <p
+                      className="font-mono"
+                      style={{ color: d.block_rate > 0.5 ? shieldColors.red : shieldColors.green }}
+                    >
                       {formatPercent(d.block_rate)}
                     </p>
                   </div>
@@ -146,7 +185,9 @@ export function DefenseMatrix() {
                 </div>
                 <div className="flex gap-1 mt-2">
                   {d.blocks > 0 && <Badge variant="red">{d.blocks} blocks</Badge>}
-                  {d.block_rate > 0 && <Badge variant="amber">{formatPercent(d.block_rate)} rate</Badge>}
+                  {d.block_rate > 0 && (
+                    <Badge variant="amber">{formatPercent(d.block_rate)} rate</Badge>
+                  )}
                 </div>
               </Card>
             );

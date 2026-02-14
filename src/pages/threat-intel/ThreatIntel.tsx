@@ -20,7 +20,10 @@ const columnHelper = createColumnHelper<ThreatActor>();
 
 const columns = [
   columnHelper.accessor('actor_id', { header: 'Actor ID', cell: (info) => info.getValue() }),
-  columnHelper.accessor((row) => row.source_ips?.[0] || '-', { id: 'source_ip', header: 'Source IP' }),
+  columnHelper.accessor((row) => row.source_ips?.[0] || '-', {
+    id: 'source_ip',
+    header: 'Source IP',
+  }),
   columnHelper.accessor('risk_level', {
     header: 'Risk',
     cell: (info) => <SeverityBadge level={info.getValue()} />,
@@ -102,7 +105,10 @@ export function ThreatIntel() {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-shield-border/50 hover:bg-shield-border/20">
+                <tr
+                  key={row.id}
+                  className="border-b border-shield-border/50 hover:bg-shield-border/20"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="py-2 px-3 text-slate-300">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
